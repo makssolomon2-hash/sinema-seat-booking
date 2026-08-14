@@ -1,0 +1,15 @@
+﻿@import "tailwindcss";
+
+@theme {
+    --breakpoint-tab: 48rem;
+    --breakpoint-lap: 64rem;
+    --breakpoint-fhd: 120rem;
+    --breakpoint-2k: 160rem;
+    --breakpoint-4k: 240rem;
+}
+
+@layer base {
+    body {
+        @apply bg-neutral-900 text-white antialiased;
+    }
+}
