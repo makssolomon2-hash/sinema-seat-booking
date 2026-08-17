@@ -18,10 +18,33 @@ const CinemaSeatBooking = ({
   title = 'Cinema Hall Booking',
   subtitle = 'Select your prefered sests',
 }) => {
-  const getSeatType = ( ) => {
-    // to do
-  };
+  const colors = [
+    'blue',
+    'purple',
+    'yellow',
+    'green',
+    'red',
+    'pink',
+  ]
 
+  const getSeatType = (rowIndex) => {
+  const seatTypeEntries = Object.entries(seatTypes);
+
+  for (let i = 0; i < seatTypeEntries.length; i++) {
+    const [type, config] = seatTypeEntries[i];
+
+    if (config.rows.includes(rowIndex)) {
+      const color = colors[i % colors.length];
+      return { type, color, ...config };
+    }
+  }
+
+  // fallback
+  const [firstType, firstConfig] = seatTypeEntries[0];
+  return { type: firstType, color: colors[0], ...firstConfig };
+};
+
+  
   const initializeSeats = useMemo(() => {
     const seats = [];
     for (let row = 0; row < layout.rows; row++){
@@ -48,10 +71,53 @@ const CinemaSeatBooking = ({
   }, [layout, seatTypes, bookedSeats]);
 
   const [seats, setSeats] = useState(initializeSeats);
+  const [selectedSeats, setSelectedSeats] = useState([]);
 
-  const getSeatClassName = (seat) => {
-    return "w-8 h-8 sm:w-10 sm:h-10 lg:w-12 m-1 rounded-t border-2 cursor-pointer transition-all duration-200 flex justify-center items-center text-xs sm:text-sm font-bold border-blue-300 text-blue-800 bg-blue-200";
+  const getColorClass = (colorName) => {
+  const colorMap = {
+    blue:   "bg-blue-100 border-blue-300 text-blue-800",
+    purple: "bg-purple-100 border-purple-300 text-purple-800",
+    yellow: "bg-yellow-100 border-yellow-300 text-yellow-800",
+    green:  "bg-green-100 border-green-300 text-green-800",
+    red:    "bg-red-100 border-red-300 text-red-800",
+    pink:   "bg-pink-100 border-pink-300 text-pink-800",
   };
+  return colorMap[colorName] || colorMap.blue;
+};
+
+const getSeatClassName = (seat) => {
+  const base = "w-8 h-8 sm:w-10 sm:h-10 lg:w-12 m-1 rounded-t border-2 transition-all duration-200 flex justify-center items-center text-xs sm:text-sm font-bold";
+
+  if (seat.status === "booked") {
+    return `${base} bg-gray-400 border-gray-500 text-gray-600 cursor-not-allowed`;
+  }
+
+  if (seat.selected) {
+    return `${base} bg-green-500 border-green-600 text-white scale-110 cursor-pointer`;
+  }
+
+  // available
+  return `${base} ${getColorClass(seat.color)} cursor-pointer hover:opacity-80`;
+};
+
+
+ /*  const getSeatClassName = (seat) => {
+    return "w-8 h-8 sm:w-10 sm:h-10 lg:w-12 m-1 rounded-t border-2 cursor-pointer transition-all duration-200 flex justify-center items-center text-xs sm:text-sm font-bold border-blue-300 text-blue-800 bg-blue-200";
+
+    if (seat.staus === "booked") {
+      return `${baseClasss} bg-gray-400 border-gray-500 text-gray-600 cursor-not-allowed`;
+    }
+
+    if (seat.selected) {
+      return `${baseClasss} bg-green--500 bordergreen-600 text-white transform scale-110`
+    }
+
+    return `${baseClasss} ${getColorClass(seat.solor)}`
+  };
+ */
+  const handleSeatClick = (rowIndex, seatIndex) => {
+    // to do
+  }
 
   const renderSeatSection = (seatRow, startIndex, endIndex) => {
     return ( 
@@ -64,6 +130,7 @@ const CinemaSeatBooking = ({
               title={ `${seat.id} - ${
                 getSeatType(seat.row)?.name || "Regular"
               } - ${currency}${seat.price} `}
+               onClick={() => handleSeatClick(seat.row, startIndex + index)}
             >
                 {" "}
                 {startIndex + index + 1}
